@@ -1,0 +1,38 @@
+server:
+  port: 88
+
+spring:
+  application:
+    name: mall-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+    gateway:
+      routes:
+        - id: mall-coupon
+          uri: lb://mall-coupon
+          predicates:
+            - Path=/coupon/**
+        - id: mall-member
+          uri: lb://mall-member
+          predicates:
+            - Path=/user/**
+        - id: mall-order
+          uri: lb://mall-order
+          predicates:
+            - Path=/order/**
+        - id: mall-product
+          uri: lb://mall-product
+          predicates:
+            - Path=/product/**
+        - id: mall-ware
+          uri: lb://mall-ware
+          predicates:
+            - Path=/ware/**
+        - id: renren-fast
+          uri: lb://renren-fast
+          predicates:
+            - Path=/api/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/renren-fast/$\{segment}
