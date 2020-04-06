@@ -62,12 +62,12 @@ public class CategoryController {
     }
 
     /**
-     * 修改
+     * 更新分类信息及关联表中的分类信息
      */
     @PostMapping("/update")
     //@RequiresPermissions("product:category:update")
     public R update(@RequestBody CategoryEntity category){
-		categoryService.updateById(category);
+		categoryService.updateDetail(category);
 
         return R.ok();
     }

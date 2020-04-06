@@ -34,6 +34,7 @@ public class ValidExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public R exceptionHandler(Exception e) {
+        e.printStackTrace();
         return R.error(ValidExceptionEnum.UNKNOWN_EXCEPTION.getCode(), ValidExceptionEnum.UNKNOWN_EXCEPTION.getMsg());
     }
 }

@@ -70,7 +70,8 @@ public class BrandController {
     @PostMapping("/update")
     //@RequiresPermissions("product:brand:update")
     public R update(@RequestBody BrandEntity brand) {
-        brandService.updateById(brand);
+        //更新品牌信息和分类关联信息中的名称
+        brandService.updateDetail(brand);
 
         return R.ok();
     }

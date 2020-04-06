@@ -1,15 +1,17 @@
 package com.mall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.mall.product.entity.AttrEntity;
+import com.mall.product.service.AttrService;
+import com.mall.product.service.CategoryService;
+import com.mall.product.vo.AttrGroupVo;
+import jdk.nashorn.internal.objects.annotations.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.mall.product.entity.AttrGroupEntity;
 import com.mall.product.service.AttrGroupService;
@@ -31,13 +33,18 @@ public class AttrGroupController {
     @Autowired
     private AttrGroupService attrGroupService;
 
+    @Autowired
+    private AttrService attrService;
+
+    @Autowired
+    private CategoryService categoryService;
     /**
      * 列表
      */
-    @RequestMapping("/list")
+    @RequestMapping("/list/{categoryId}")
     //@RequiresPermissions("product:attrgroup:list")
-    public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = attrGroupService.queryPage(params);
+    public R list(@RequestParam Map<String, Object> params, @PathVariable("categoryId") Long categoryId){
+        PageUtils page = attrGroupService.queryPage(params, categoryId);
 
         return R.ok().put("page", page);
     }
@@ -50,7 +57,9 @@ public class AttrGroupController {
     //@RequiresPermissions("product:attrgroup:info")
     public R info(@PathVariable("attrGroupId") Long attrGroupId){
 		AttrGroupEntity attrGroup = attrGroupService.getById(attrGroupId);
-
+        Long catelogId = attrGroup.getCatelogId();
+        Long[] catelogPath = categoryService.getCatelogPathByCatelogId(catelogId);
+        attrGroup.setCatelogPath(catelogPath);
         return R.ok().put("attrGroup", attrGroup);
     }
 
@@ -87,4 +96,40 @@ public class AttrGroupController {
         return R.ok();
     }
 
+
+    @GetMapping("/{attrgroupId}/attr/relation")
+    public R getAttrRelation(@PathVariable("attrgroupId") Long attrgroupId) {
+        List<AttrEntity> data = attrService.getAttrRelation(attrgroupId);
+        return R.ok().put("data", data);
+    }
+
+    /**
+     * 查询分组没有关联的attr
+     * 规则:
+     *  0. group只能关联基本属性,不能关联销售属性
+     *  1. group只能关联自己分类下的attr
+     *  2. group只能关联其他group没有关联的attr
+     *  3. attr只能被一个group关联
+     * @param attrgroupId
+     * @param params
+     * @return
+     */
+    @GetMapping("/{attrgroupId}/noattr/relation")
+    public R getAttrNoRelation(@PathVariable("attrgroupId") Long attrgroupId,
+                               @RequestParam Map<String, Object> params) {
+        PageUtils page = attrService.getAttrNoRelation(params, attrgroupId);
+        return R.ok().put("page", page);
+    }
+    @PostMapping("/attr/relation/delete")
+    public R deleteRelation(@RequestBody AttrGroupVo[] groupVo) {
+        attrGroupService.deleteRelation(groupVo);
+        return R.ok();
+    }
+
+    ///product/attrgroup/attr/relation
+    @PostMapping("attr/relation")
+    public R addRelation(@RequestBody List<AttrGroupVo> groupVos) {
+        attrService.addRelation(groupVos);
+        return R.ok();
+    }
 }
