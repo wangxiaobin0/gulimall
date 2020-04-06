@@ -18,6 +18,7 @@
         <module>renren-generator</module>
         <module>mall_common</module>
         <module>mall_gateway</module>
+        <module>mall_third_party</module>
     </modules>
     <!--锁定版本-->
     <properties>

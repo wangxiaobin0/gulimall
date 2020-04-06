@@ -5,7 +5,14 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import com.mall.common.valid.ListValid;
+import com.mall.common.valid.UpdateStatusGroup;
 import lombok.Data;
+import org.hibernate.validator.constraints.URL;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 /**
  * 品牌
@@ -27,10 +34,13 @@ public class BrandEntity implements Serializable {
 	/**
 	 * 品牌名
 	 */
+	@NotBlank
 	private String name;
 	/**
 	 * 品牌logo地址
 	 */
+	@NotBlank
+	@URL
 	private String logo;
 	/**
 	 * 介绍
@@ -39,10 +49,12 @@ public class BrandEntity implements Serializable {
 	/**
 	 * 显示状态[0-不显示；1-显示]
 	 */
+	@ListValid(value = {0, 1}, groups = UpdateStatusGroup.class)
 	private Integer showStatus;
 	/**
 	 * 检索首字母
 	 */
+	@Pattern(regexp = "[A-Z]+")
 	private String firstLetter;
 	/**
 	 * 排序

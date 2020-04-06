@@ -1,19 +1,17 @@
-package com.mall.product;
+package com.mall.thirdparty;
 
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 /**
  * @author
- * @date 2020/4/4
+ * @date 2020/4/5
  */
 @SpringBootApplication
 @EnableDiscoveryClient
-@MapperScan("com.mall.product.dao")
-public class ProductApplication {
+public class ThirdPartyApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ProductApplication.class, args);
+        SpringApplication.run(ThirdPartyApplication.class, args);
     }
 }

@@ -10,26 +10,41 @@ spring:
         server-addr: 127.0.0.1:8848
     gateway:
       routes:
-        - id: mall-coupon
-          uri: lb://mall-coupon
-          predicates:
-            - Path=/coupon/**
-        - id: mall-member
-          uri: lb://mall-member
-          predicates:
-            - Path=/user/**
-        - id: mall-order
-          uri: lb://mall-order
-          predicates:
-            - Path=/order/**
+        #产品服务
         - id: mall-product
           uri: lb://mall-product
           predicates:
-            - Path=/product/**
+            - Path=/api/product/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+        #三方服务
+        - id: mall-third-party
+          uri: lb://mall-third-party
+          predicates:
+            - Path=/api/thirdparty/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+        #优惠服务
+        - id: mall-coupon
+          uri: lb://mall-coupon
+          predicates:
+            - Path=/api/coupon/**
+        #用户服务
+        - id: mall-member
+          uri: lb://mall-member
+          predicates:
+            - Path=/api/user/**
+        #订单服务
+        - id: mall-order
+          uri: lb://mall-order
+          predicates:
+            - Path=/api/order/**
+        #仓储服务
         - id: mall-ware
           uri: lb://mall-ware
           predicates:
-            - Path=/ware/**
+            - Path=/api/ware/**
+        #人人开源后台
         - id: renren-fast
           uri: lb://renren-fast
           predicates:

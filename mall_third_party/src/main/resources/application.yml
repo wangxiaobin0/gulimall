@@ -1,0 +1,22 @@
+server:
+  port: 30000
+spring:
+  application:
+    name: mall-third-party
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+#      config:
+#        namespace: 3a8f4f3a-fd24-4399-b25b-8964e64a251e
+#        ext-config:
+#          - data-id: oss.yml
+#            group: DEFAULT_GROUP
+#            refresh: true
+    #阿里云对象存储
+    alicloud:
+      access-key: LTAI4FmzDBZByNuokPMs7QwC
+      secret-key: spbY2KlKJjoI3wk0CpPTr7eEv4X90M
+      oss:
+        endpoint: oss-cn-beijing.aliyuncs.com
+        bucket: xbwang
