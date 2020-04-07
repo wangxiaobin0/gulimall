@@ -12,6 +12,11 @@
     <artifactId>mall_common</artifactId>
 
     <dependencies>
+        <!--服务调用-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
         <!--服务注册-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>

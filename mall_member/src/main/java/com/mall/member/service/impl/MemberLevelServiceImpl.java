@@ -1,5 +1,6 @@
 package com.mall.member.service.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -18,9 +19,14 @@ public class MemberLevelServiceImpl extends ServiceImpl<MemberLevelDao, MemberLe
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
+
+        QueryWrapper<MemberLevelEntity> queryWrapper = new QueryWrapper<>();
+        String key = (String)params.get("key");
+        if (!StringUtils.isEmpty(key)) {
+            queryWrapper.eq("id", key).like("name", key);
+        }
         IPage<MemberLevelEntity> page = this.page(
-                new Query<MemberLevelEntity>().getPage(params),
-                new QueryWrapper<MemberLevelEntity>()
+                new Query<MemberLevelEntity>().getPage(params),queryWrapper
         );
 
         return new PageUtils(page);

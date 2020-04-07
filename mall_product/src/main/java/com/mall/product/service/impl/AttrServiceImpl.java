@@ -152,11 +152,8 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     @Override
     public void removeAttr(List<Long> asList) {
         this.removeByIds(asList);
-        asList.forEach(id -> {
-            attrAttrgroupRelationService.remove(new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", id));
-        });
+        attrAttrgroupRelationService.remove(new QueryWrapper<AttrAttrgroupRelationEntity>().in("attr_id", asList));
     }
-
     @Override
     public List<AttrEntity> getAttrRelation(Long attrgroupId) {
         List<AttrAttrgroupRelationEntity> groupId = attrAttrgroupRelationService.list(new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_group_id", attrgroupId));

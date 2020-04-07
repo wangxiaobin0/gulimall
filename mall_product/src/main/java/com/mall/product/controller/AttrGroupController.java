@@ -9,6 +9,7 @@ import com.mall.product.entity.AttrEntity;
 import com.mall.product.service.AttrService;
 import com.mall.product.service.CategoryService;
 import com.mall.product.vo.AttrGroupVo;
+import com.mall.product.vo.AttrGroupWithAttrsVo;
 import jdk.nashorn.internal.objects.annotations.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -91,7 +92,7 @@ public class AttrGroupController {
     @RequestMapping("/delete")
     //@RequiresPermissions("product:attrgroup:delete")
     public R delete(@RequestBody Long[] attrGroupIds){
-		attrGroupService.removeByIds(Arrays.asList(attrGroupIds));
+		attrGroupService.delete(Arrays.asList(attrGroupIds));
 
         return R.ok();
     }
@@ -126,10 +127,26 @@ public class AttrGroupController {
         return R.ok();
     }
 
-    ///product/attrgroup/attr/relation
+    /**
+     * group添加关联的attr
+     * @param groupVos
+     * @return
+     */
     @PostMapping("attr/relation")
     public R addRelation(@RequestBody List<AttrGroupVo> groupVos) {
         attrService.addRelation(groupVos);
         return R.ok();
+    }
+
+
+    /**
+     * 通过分类id查询分类下的分组及分组属性
+     * @param catelogId
+     * @return
+     */
+    @GetMapping("/{catelogId}/withattr")
+    public R getAttrGroupAndAttrByCatelogId(@PathVariable("catelogId") Long catelogId) {
+        List<AttrGroupWithAttrsVo> data = attrGroupService.getAttrGroupAndAttrByCatelogId(catelogId);
+        return R.ok().put("data", data);
     }
 }

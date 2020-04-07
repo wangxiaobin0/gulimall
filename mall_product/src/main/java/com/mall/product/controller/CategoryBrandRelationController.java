@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.mall.product.entity.BrandEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -96,6 +97,17 @@ public class CategoryBrandRelationController {
 		categoryBrandRelationService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
+    }
+
+    /**
+     * 根据分类id查询相关联的品牌
+     * @param catId
+     * @return
+     */
+    @GetMapping("/brands/list")
+    public R getRelationBrandByCatId(@RequestParam("catId") Long catId) {
+        List<BrandEntity> data = categoryBrandRelationService.getRelationBrandByCatId(catId);
+        return R.ok().put("data", data);
     }
 
 }

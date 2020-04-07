@@ -33,7 +33,9 @@ spring:
         - id: mall-member
           uri: lb://mall-member
           predicates:
-            - Path=/api/user/**
+            - Path=/api/member/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
         #订单服务
         - id: mall-order
           uri: lb://mall-order
