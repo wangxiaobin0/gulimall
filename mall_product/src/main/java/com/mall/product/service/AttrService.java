@@ -3,6 +3,7 @@ package com.mall.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.mall.common.utils.PageUtils;
 import com.mall.product.entity.AttrEntity;
+import com.mall.product.entity.ProductAttrValueEntity;
 import com.mall.product.vo.AttrGroupVo;
 import com.mall.product.vo.AttrRespVo;
 import com.mall.product.vo.AttrVo;
@@ -36,5 +37,9 @@ public interface AttrService extends IService<AttrEntity> {
     PageUtils getAttrNoRelation(Map<String, Object> params, Long attrgroupId);
 
     void addRelation(List<AttrGroupVo> groupVos);
+
+    List<ProductAttrValueEntity> getAttrListForSpu(Long spuId);
+
+    void updateSpuAttr(Long spuId, List<ProductAttrValueEntity> data);
 }
 

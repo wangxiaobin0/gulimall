@@ -41,11 +41,15 @@ spring:
           uri: lb://mall-order
           predicates:
             - Path=/api/order/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
         #仓储服务
         - id: mall-ware
           uri: lb://mall-ware
           predicates:
             - Path=/api/ware/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
         #人人开源后台
         - id: renren-fast
           uri: lb://renren-fast

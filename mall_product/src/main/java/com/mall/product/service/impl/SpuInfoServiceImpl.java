@@ -121,6 +121,8 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             skuInfoEntity.setBrandId(skuInfoEntity.getBrandId());
             skuInfoEntity.setSaleCount(0L);
             skuInfoEntity.setSpuId(spuInfoEntity.getId());
+            skuInfoEntity.setPrice(new BigDecimal(sku.getPrice()));
+            skuInfoEntity.setBrandId(spuInfoEntity.getBrandId());
 
             List<Images> skuImages = sku.getImages();
             skuImages.forEach(img -> {
@@ -135,7 +137,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 BeanUtils.copyProperties(img, skuImagesEntity);
                 skuImagesEntity.setSkuId(skuInfoEntity.getSkuId());
                 return skuImagesEntity;
-            }).filter(entity-> {
+            }).filter(entity -> {
                 return !StringUtils.isEmpty(entity.getImgUrl());
             }).collect(Collectors.toList());
             skuImagesService.saveBatch(skuImgList);
@@ -161,9 +163,36 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
     }
 
+    @Override
+    public PageUtils queryPageByCondition(Map<String, Object> params) {
+        //状态. 1.上架 2.下架
+        String status = (String) params.get("status");
+        String key = (String) params.get("key");
+        String catelogId = (String) params.get("catelogId");
+        String brandId = (String) params.get("brandId");
+        QueryWrapper<SpuInfoEntity> queryWrapper = new QueryWrapper<>();
+        if (StringUtils.isNotEmpty(status)) {
+                queryWrapper.eq("publish_status", status);
+        }
+        if (StringUtils.isNotEmpty(catelogId) && !"0".equalsIgnoreCase(catelogId)) {
+                queryWrapper.eq("catalog_id", catelogId);
+        }
+        if (StringUtils.isNotEmpty(brandId) && !"0".equalsIgnoreCase(brandId)) {
+                queryWrapper.eq("brand_id", brandId);
+        }
+        if (StringUtils.isNotEmpty(key)) {
+            queryWrapper.and(wrapper -> {
+                wrapper.eq("id", key).like("spu_name", key);
+            });
+        }
+        IPage<SpuInfoEntity> page = this.page(new Query<SpuInfoEntity>().getPage(params), queryWrapper);
+        return new PageUtils(page);
+    }
+
     /**
      * 保存Spu图片集
-     * @param id spuId
+     *
+     * @param id     spuId
      * @param images 图片集
      */
     private void saveSpuImages(Long id, List<String> images) {
@@ -171,7 +200,6 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     }
 
     /**
-     *
      * @param spuInfoDescEntity spu图片详情
      */
     private void saveSpuInfoDesc(SpuInfoDescEntity spuInfoDescEntity) {
@@ -180,6 +208,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
     /**
      * 保存Spu基本信息
+     *
      * @param spuInfoEntity Spu基本信息
      */
     private void saveSpuInfo(SpuInfoEntity spuInfoEntity) {

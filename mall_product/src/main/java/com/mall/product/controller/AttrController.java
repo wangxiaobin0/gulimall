@@ -1,9 +1,11 @@
 package com.mall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.mall.product.entity.ProductAttrValueEntity;
 import com.mall.product.vo.AttrGroupVo;
 import com.mall.product.vo.AttrRespVo;
 import com.mall.product.vo.AttrVo;
@@ -83,6 +85,20 @@ public class AttrController {
     //@RequiresPermissions("product:attr:delete")
     public R delete(@RequestBody Long[] attrIds){
 		attrService.removeAttr(Arrays.asList(attrIds));
+        return R.ok();
+    }
+
+    ///product/attr/base/listforspu/{spuId}
+    @GetMapping("/base/listforspu/{spuId}")
+    public R getAttrListForSpu(@PathVariable("spuId") Long spuId) {
+        List<ProductAttrValueEntity> data = attrService.getAttrListForSpu(spuId);
+        return R.ok().put("data", data);
+    }
+
+    ///product/attr/update/{spuId}
+    @PostMapping("/update/{spuId}")
+    public R updateSpuAttr(@PathVariable("spuId") Long spuId, @RequestBody List<ProductAttrValueEntity> data) {
+        attrService.updateSpuAttr(spuId, data);
         return R.ok();
     }
 }

@@ -1,12 +1,8 @@
 package com.mall.product.service.impl;
 
 import com.mall.common.constrant.ProductConstant;
-import com.mall.product.entity.AttrAttrgroupRelationEntity;
-import com.mall.product.entity.AttrGroupEntity;
-import com.mall.product.entity.CategoryEntity;
-import com.mall.product.service.AttrAttrgroupRelationService;
-import com.mall.product.service.AttrGroupService;
-import com.mall.product.service.CategoryService;
+import com.mall.product.entity.*;
+import com.mall.product.service.*;
 import com.mall.product.vo.AttrGroupVo;
 import com.mall.product.vo.AttrRespVo;
 import com.mall.product.vo.AttrVo;
@@ -29,8 +25,6 @@ import com.mall.common.utils.PageUtils;
 import com.mall.common.utils.Query;
 
 import com.mall.product.dao.AttrDao;
-import com.mall.product.entity.AttrEntity;
-import com.mall.product.service.AttrService;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -46,6 +40,9 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
 
     @Autowired
     AttrGroupService attrGroupService;
+
+    @Autowired
+    ProductAttrValueService productAttrValueService;
 
     @Resource
     AttrDao attrDao;
@@ -206,6 +203,26 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     @Override
     public void addRelation(List<AttrGroupVo> groupVos) {
         attrAttrgroupRelationService.saveBatch(groupVos);
+    }
+
+    @Override
+    public List<ProductAttrValueEntity> getAttrListForSpu(Long spuId) {
+        List<ProductAttrValueEntity> data = productAttrValueService.list(new QueryWrapper<ProductAttrValueEntity>().eq("spu_id", spuId));
+
+        return data;
+    }
+
+    @Override
+    @Transactional
+    public void updateSpuAttr(Long spuId, List<ProductAttrValueEntity> data) {
+        //先删除原来的Spu Attr属性
+        productAttrValueService.remove(new QueryWrapper<ProductAttrValueEntity>().eq("spu_id", spuId));
+
+        List<ProductAttrValueEntity> collect = data.stream().map(d -> {
+            d.setSpuId(spuId);
+            return d;
+        }).collect(Collectors.toList());
+        productAttrValueService.saveBatch(collect);
     }
 
 }
