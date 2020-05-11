@@ -1,9 +1,12 @@
 package com.mall.product.service.impl;
 
+import com.mall.common.to.SkuEsModel;
 import com.mall.common.to.SkuReductionTo;
 import com.mall.common.to.SpuBoundTo;
+import com.mall.common.utils.R;
 import com.mall.product.entity.*;
 import com.mall.product.feign.CouponFeignService;
+import com.mall.product.feign.WareFeignService;
 import com.mall.product.service.*;
 import com.mall.product.vo.*;
 import org.apache.commons.lang.StringUtils;
@@ -54,6 +57,14 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     @Autowired
     CouponFeignService couponFeignService;
 
+    @Autowired
+    BrandService brandService;
+
+    @Autowired
+    CategoryService categoryService;
+
+    @Autowired
+    WareFeignService wareFeignService;
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<SpuInfoEntity> page = this.page(
@@ -187,6 +198,67 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         }
         IPage<SpuInfoEntity> page = this.page(new Query<SpuInfoEntity>().getPage(params), queryWrapper);
         return new PageUtils(page);
+    }
+
+    @Override
+    public void up(Long spuId) {
+
+        //查询所有sku
+        List<SkuInfoEntity> skuInfoEntities = skuInfoService.getSkuListBySpuId(spuId);
+
+        List<Long> skuIdList = skuInfoEntities.stream().map(SkuInfoEntity::getSkuId).collect(Collectors.toList());
+
+        //sku的所有参数信息
+        List<ProductAttrValueEntity> attrListForSpu = attrService.getAttrListForSpu(spuId);
+        //sku的id集合
+        List<Long> attrIdList = attrListForSpu.stream().map(productAttrValueEntity -> {
+            return productAttrValueEntity.getAttrId();
+        }).collect(Collectors.toList());
+
+
+        /*
+        用于搜索的属性
+         */
+        //可以用于搜索的skuId集合
+        List<Long> searchAttrId = attrService.getSearchAttrList(attrIdList);
+        //过滤掉不用作搜索的参数
+        List<SkuEsModel.Attrs> attrsList = attrListForSpu.stream().filter(productAttrValueEntity -> {
+            return searchAttrId.contains(productAttrValueEntity.getAttrId());
+        //返回attrs对象
+        }).map(item -> {
+            SkuEsModel.Attrs attrs = new SkuEsModel.Attrs();
+            BeanUtils.copyProperties(item, attrs);
+            return attrs;
+        }).collect(Collectors.toList());
+
+        /*
+        sku库存
+         */
+        List<SkuHasStockVo> skuHasStockVos = wareFeignService.getSkuHasStock(skuIdList).getData();
+        Map<Long, Boolean> skuStock = skuHasStockVos.stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId, SkuHasStockVo::getHasStock));
+
+        skuInfoEntities.stream().map(skuInfoEntity -> {
+            SkuEsModel skuEsModel = new SkuEsModel();
+            BeanUtils.copyProperties(skuInfoEntities, skuEsModel);
+            skuEsModel.setSkuPrice(skuInfoEntity.getPrice());
+            skuEsModel.setSkuImg(skuInfoEntity.getSkuDefaultImg());
+            //是否有库存
+            skuEsModel.setHasStock(skuStock.get(skuInfoEntity.getSkuId()));
+            //搜索分数
+            skuEsModel.setHotScore(0L);
+            //品牌名称
+            BrandEntity brandEntity = brandService.getById(skuInfoEntity.getBrandId());
+            skuEsModel.setBrandName(brandEntity.getName());
+            //品牌图片
+            skuEsModel.setBrandImg(brandEntity.getLogo());
+            //分类名称
+            CategoryEntity categoryEntity = categoryService.getById(skuInfoEntity.getCatalogId());
+            skuEsModel.setCategoryName(categoryEntity.getName());
+
+            //设置检索属性
+            skuEsModel.setAttrs(attrsList);
+            return skuEsModel;
+        }).collect(Collectors.toList());
     }
 
     /**

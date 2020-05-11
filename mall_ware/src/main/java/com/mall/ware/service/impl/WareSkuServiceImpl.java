@@ -1,9 +1,14 @@
 package com.mall.ware.service.impl;
 
+import com.mall.ware.vo.SkuHasStockVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -14,11 +19,13 @@ import com.mall.ware.dao.WareSkuDao;
 import com.mall.ware.entity.WareSkuEntity;
 import com.mall.ware.service.WareSkuService;
 
+import javax.annotation.Resource;
+
 
 @Service("wareSkuService")
 public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> implements WareSkuService {
 
-    @Autowired
+    @Resource
     WareSkuDao wareSkuDao;
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -61,6 +68,18 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             entity.setStock(entity.getStock() + skuNum);
             this.updateById(entity);
         }
+    }
+
+    @Override
+    public List<SkuHasStockVo> getSkuHasStock(List<Long> skuId) {
+        List<SkuHasStockVo> collect = skuId.stream().map(id -> {
+            SkuHasStockVo skuHasStockVo = new SkuHasStockVo();
+            Long count = wareSkuDao.getSkuStock(id);
+            skuHasStockVo.setSkuId(id);
+            skuHasStockVo.setHasStock(count > 0);
+            return skuHasStockVo;
+        }).collect(Collectors.toList());
+        return collect;
     }
 
 }
