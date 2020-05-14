@@ -57,3 +57,11 @@ spring:
             - Path=/api/**
           filters:
             - RewritePath=/api/(?<segment>.*),/renren-fast/$\{segment}
+        #域名访问
+        - id: mall
+          uri: lb://mall-product
+          #按请求中的host匹配，
+          predicates:
+            - Host=mall.com,*.mall.com
+          filters:
+            - RewritePath=/api/(?<segment>.*),/renren-fast/$\{segment}
