@@ -2,8 +2,10 @@ package com.mall.product.service.impl;
 
 import com.mall.product.dao.CategoryBrandRelationDao;
 import com.mall.product.service.CategoryBrandRelationService;
+import com.mall.product.vo.web.CategoryLevelTwoVo;
 import org.apache.commons.lang.StringUtils;
 import org.omg.CORBA.LongHolder;
+import org.omg.PortableServer.THREAD_POLICY_ID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -95,6 +97,52 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             categoryBrandRelationService.updateCategory(category.getCatId(), category.getName());
         }
 
+    }
+
+    @Override
+    public List<CategoryEntity> listForIndex() {
+        QueryWrapper<CategoryEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("cat_level", 1);
+        List<CategoryEntity> list = this.list(queryWrapper);
+        return list;
+    }
+
+    @Override
+    public Map<Long, List<CategoryLevelTwoVo>> getCategoryLevelInfo() {
+        //一级分类id集合
+        List<Long> levelOneIds = listForIndex().stream().map(item -> item.getCatId()).collect(Collectors.toList());
+
+        Map<Long, List<CategoryLevelTwoVo>> listMap = levelOneIds.stream().collect(Collectors.toMap(k -> k, v -> {
+            //根据一级分类id查询二级分类
+            QueryWrapper<CategoryEntity> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("parent_cid", v);
+            List<CategoryEntity> levelTwoList = this.list(queryWrapper);
+            List<CategoryLevelTwoVo> twoVoList = levelTwoList.stream().map(levelTwo -> {
+                //组装CategoryLevelTwoVo
+                CategoryLevelTwoVo twoVo = new CategoryLevelTwoVo();
+                twoVo.setCatalog1Id(v);
+                twoVo.setId(levelTwo.getCatId());
+                twoVo.setName(levelTwo.getName());
+                //根据二级分类id查询三级分类
+                QueryWrapper<CategoryEntity> queryWrapper1 = new QueryWrapper<>();
+                queryWrapper1.eq("parent_cid", levelTwo.getCatId());
+                List<CategoryEntity> levelThreeList = this.list(queryWrapper1);
+                List<CategoryLevelTwoVo.CategoryLevelThree> threeList = levelThreeList.stream().map(levelThree -> {
+                    //组装CategoryLevelThree
+                    CategoryLevelTwoVo.CategoryLevelThree three = new CategoryLevelTwoVo.CategoryLevelThree();
+                    three.setCatalog2Id(levelTwo.getCatId());
+                    three.setId(levelThree.getCatId());
+                    three.setName(levelThree.getName());
+                    return three;
+                }).collect(Collectors.toList());
+                twoVo.setCatalog3List(threeList);
+                return twoVo;
+            }).collect(Collectors.toList());
+
+            return twoVoList;
+        }));
+
+        return listMap;
     }
 
     /**

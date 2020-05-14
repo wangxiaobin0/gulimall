@@ -16,6 +16,8 @@ spring:
         server-addr: 127.0.0.1:8848
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
+  thymeleaf:
+    cache: true
 
 
 mybatis-plus:
@@ -30,4 +32,5 @@ mybatis-plus:
 logging:
   level:
     com.mall: debug
+
 
