@@ -1,5 +1,6 @@
 package com.mall.product.controller;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -87,9 +88,13 @@ public class SpuInfoController {
      * 上架
      * @return
      */
-    @PostMapping("/{spuId}")
-    public R up(@PathVariable("spuId") Long spuId) {
-        spuInfoService.up(spuId);
-        return R.ok();
+    @PostMapping("/{spuId}/up")
+    public R up(@PathVariable("spuId") Long spuId) throws IOException {
+        Boolean up = spuInfoService.up(spuId);
+        if (up) {
+            return R.ok();
+        } else {
+            return R.error();
+        }
     }
 }

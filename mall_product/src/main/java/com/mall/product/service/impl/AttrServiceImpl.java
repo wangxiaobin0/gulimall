@@ -230,7 +230,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         QueryWrapper<AttrEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("search_type", "1");
         queryWrapper.in("attr_id", attrIdList);
-        List<AttrEntity> list = this.list();
+        List<AttrEntity> list = this.list(queryWrapper);
         List<Long> collect = list.stream().map(AttrEntity::getAttrId).collect(Collectors.toList());
         return collect;
     }

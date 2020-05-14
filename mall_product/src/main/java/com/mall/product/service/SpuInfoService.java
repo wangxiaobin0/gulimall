@@ -5,6 +5,7 @@ import com.mall.common.utils.PageUtils;
 import com.mall.product.entity.SpuInfoEntity;
 import com.mall.product.vo.SpuInfoVo;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -22,7 +23,7 @@ public interface SpuInfoService extends IService<SpuInfoEntity> {
 
     PageUtils queryPageByCondition(Map<String, Object> params);
 
-    void up(Long spuId);
+    Boolean up(Long spuId) throws IOException;
 
 }
 

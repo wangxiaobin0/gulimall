@@ -27,4 +27,18 @@ public class ProductConstant {
         }
     }
 
+    public enum ProductUpEnum {
+        PRODUCT_NEW(0, "新建"),
+        PRODUCT_UP(1, "已上架"),
+        PRODUCT_DOWN(2, "已下架");
+
+        @Getter
+        private Integer code;
+        private String msg;
+        ProductUpEnum(Integer code, String msg) {
+            this.code = code;
+            this.msg = msg;
+        }
+    }
+
 }

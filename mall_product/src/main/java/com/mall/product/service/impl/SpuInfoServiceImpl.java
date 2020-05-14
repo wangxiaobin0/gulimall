@@ -1,11 +1,14 @@
 package com.mall.product.service.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.mall.common.constrant.ProductConstant;
 import com.mall.common.to.SkuEsModel;
 import com.mall.common.to.SkuReductionTo;
 import com.mall.common.to.SpuBoundTo;
 import com.mall.common.utils.R;
 import com.mall.product.entity.*;
 import com.mall.product.feign.CouponFeignService;
+import com.mall.product.feign.ProductSearchFeignService;
 import com.mall.product.feign.WareFeignService;
 import com.mall.product.service.*;
 import com.mall.product.vo.*;
@@ -14,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +32,8 @@ import com.mall.common.utils.Query;
 
 import com.mall.product.dao.SpuInfoDao;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
 
 
 @Service("spuInfoService")
@@ -65,6 +71,10 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
     @Autowired
     WareFeignService wareFeignService;
+
+    @Resource
+    ProductSearchFeignService productSearchFeignService;
+
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<SpuInfoEntity> page = this.page(
@@ -201,7 +211,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     }
 
     @Override
-    public void up(Long spuId) {
+    public Boolean up(Long spuId) throws IOException {
 
         //查询所有sku
         List<SkuInfoEntity> skuInfoEntities = skuInfoService.getSkuListBySpuId(spuId);
@@ -234,14 +244,16 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         /*
         sku库存
          */
-        List<SkuHasStockVo> skuHasStockVos = wareFeignService.getSkuHasStock(skuIdList).getData();
+        R stock = wareFeignService.getSkuHasStock(skuIdList);
+        List<SkuHasStockVo> skuHasStockVos = (List<SkuHasStockVo> )stock.get("skuHasStockVoList", new TypeReference<List<SkuHasStockVo>>() {});
         Map<Long, Boolean> skuStock = skuHasStockVos.stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId, SkuHasStockVo::getHasStock));
 
-        skuInfoEntities.stream().map(skuInfoEntity -> {
+        List<SkuEsModel> skuEsModelList = skuInfoEntities.stream().map(skuInfoEntity -> {
             SkuEsModel skuEsModel = new SkuEsModel();
-            BeanUtils.copyProperties(skuInfoEntities, skuEsModel);
+            BeanUtils.copyProperties(skuInfoEntity, skuEsModel);
             skuEsModel.setSkuPrice(skuInfoEntity.getPrice());
             skuEsModel.setSkuImg(skuInfoEntity.getSkuDefaultImg());
+            skuEsModel.setCategoryId(skuInfoEntity.getCatalogId());
             //是否有库存
             skuEsModel.setHasStock(skuStock.get(skuInfoEntity.getSkuId()));
             //搜索分数
@@ -259,6 +271,15 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             skuEsModel.setAttrs(attrsList);
             return skuEsModel;
         }).collect(Collectors.toList());
+        //录入es
+        R saveResponse = productSearchFeignService.save(skuEsModelList);
+        //修改spu状态为已上架
+        SpuInfoEntity entity = new SpuInfoEntity();
+        entity.setUpdateTime(new Date());
+        entity.setId(spuId);
+        entity.setPublishStatus(ProductConstant.ProductUpEnum.PRODUCT_UP.getCode());
+        this.updateById(entity);
+        return (Integer) saveResponse.get("code") == 0;
     }
 
     /**
