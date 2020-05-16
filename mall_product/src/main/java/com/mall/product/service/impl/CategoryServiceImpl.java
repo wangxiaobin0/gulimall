@@ -109,24 +109,22 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Override
     public Map<Long, List<CategoryLevelTwoVo>> getCategoryLevelInfo() {
-        //一级分类id集合
-        List<Long> levelOneIds = listForIndex().stream().map(item -> item.getCatId()).collect(Collectors.toList());
+        //所有分类集合
+        List<CategoryEntity> list = this.list();
+        List<CategoryEntity> levelOneList = getLevelList(list, 0);
 
-        Map<Long, List<CategoryLevelTwoVo>> listMap = levelOneIds.stream().collect(Collectors.toMap(k -> k, v -> {
+        Map<Long, List<CategoryLevelTwoVo>> listMap = levelOneList.stream().collect(Collectors.toMap(k -> k.getCatId(), v -> {
             //根据一级分类id查询二级分类
-            QueryWrapper<CategoryEntity> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("parent_cid", v);
-            List<CategoryEntity> levelTwoList = this.list(queryWrapper);
+            List<CategoryEntity> levelTwoList = getLevelList(list, v.getCatId());
+
             List<CategoryLevelTwoVo> twoVoList = levelTwoList.stream().map(levelTwo -> {
                 //组装CategoryLevelTwoVo
                 CategoryLevelTwoVo twoVo = new CategoryLevelTwoVo();
-                twoVo.setCatalog1Id(v);
+                twoVo.setCatalog1Id(v.getCatId());
                 twoVo.setId(levelTwo.getCatId());
                 twoVo.setName(levelTwo.getName());
                 //根据二级分类id查询三级分类
-                QueryWrapper<CategoryEntity> queryWrapper1 = new QueryWrapper<>();
-                queryWrapper1.eq("parent_cid", levelTwo.getCatId());
-                List<CategoryEntity> levelThreeList = this.list(queryWrapper1);
+                List<CategoryEntity> levelThreeList = getLevelList(list, levelTwo.getCatId());
                 List<CategoryLevelTwoVo.CategoryLevelThree> threeList = levelThreeList.stream().map(levelThree -> {
                     //组装CategoryLevelThree
                     CategoryLevelTwoVo.CategoryLevelThree three = new CategoryLevelTwoVo.CategoryLevelThree();
@@ -163,4 +161,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         path.add(byId.getCatId());
         return  path;
     }
+
+    public List<CategoryEntity> getLevelList(List<CategoryEntity> categoryEntityList, long parentId) {
+        return categoryEntityList.stream().filter(item -> item.getParentCid() == parentId).collect(Collectors.toList());
+    }
+
 }

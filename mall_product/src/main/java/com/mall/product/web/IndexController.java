@@ -31,4 +31,9 @@ public class IndexController {
         Map<Long, List<CategoryLevelTwoVo>> map = categoryService.getCategoryLevelInfo();
         return map;
     }
+    @GetMapping("/product/hello")
+    @ResponseBody
+    public String hello() {
+        return "hello";
+    }
 }
