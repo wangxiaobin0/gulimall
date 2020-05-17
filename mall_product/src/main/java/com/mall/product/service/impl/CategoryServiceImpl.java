@@ -10,6 +10,8 @@ import org.apache.commons.lang.StringUtils;
 import org.omg.CORBA.LongHolder;
 import org.omg.PortableServer.THREAD_POLICY_ID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,7 @@ import javax.annotation.Resource;
 
 
 @Service("categoryService")
+@CacheConfig(cacheNames = "category")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
 
     @Autowired
@@ -42,9 +45,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Resource
     CategoryBrandRelationService categoryBrandRelationService;
-
-    @Autowired
-    StringRedisTemplate redisTemplate;
 
     private static final ObjectMapper om = new ObjectMapper();
 
@@ -113,26 +113,19 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     }
 
     @Override
+    @Cacheable(key = "#root.targetClass.name + '.' + #root.methodName")
     public List<CategoryEntity> listForIndex() throws JsonProcessingException {
-        String json = json = redisTemplate.opsForValue().get(CACHE_INDEX_CATEGORY_NAME);
-        if (StringUtils.isNotEmpty(json)) {
-            return om.readValue(json, new TypeReference<List<CategoryEntity>>() {});
-        }
         QueryWrapper<CategoryEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("cat_level", 1);
         List<CategoryEntity> list = this.list(queryWrapper);
-        redisTemplate.opsForValue().set(CACHE_INDEX_CATEGORY_NAME, om.writeValueAsString(list));
         return list;
     }
 
     @Override
+    @Cacheable(key = "#root.targetClass.name + '.' + #root.methodName")
     public Map<Long, List<CategoryLevelTwoVo>> getCategoryLevelInfo() throws JsonProcessingException{
 
 
-        String json = redisTemplate.opsForValue().get(CACHE_INDEX_CATEGORY_ALL_NAME);
-        if (StringUtils.isNotEmpty(json)) {
-            return om.readValue(json, new TypeReference<Map<Long, List<CategoryLevelTwoVo>>>() {});
-        }
         Map<Long, List<CategoryLevelTwoVo>> listMap = null;
         //所有分类集合
         List<CategoryEntity> list = this.list();
@@ -164,7 +157,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
             return twoVoList;
         }));
-        redisTemplate.opsForValue().set(CACHE_INDEX_CATEGORY_ALL_NAME, om.writeValueAsString(listMap));
         return listMap;
     }
 

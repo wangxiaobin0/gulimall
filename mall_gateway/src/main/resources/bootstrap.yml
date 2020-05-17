@@ -62,6 +62,10 @@ spring:
           uri: lb://mall-product
           #按请求中的host匹配，
           predicates:
-            - Host=mall.com,*.mall.com
-          filters:
-            - RewritePath=/api/(?<segment>.*),/renren-fast/$\{segment}
+            - Host=mall.com
+        #搜索域名访问
+        - id: mall-serach-route
+          uri: lb://mall-search
+          #按请求中的host匹配，
+          predicates:
+            - Host=search.mall.com
