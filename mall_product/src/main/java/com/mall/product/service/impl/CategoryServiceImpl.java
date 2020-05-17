@@ -1,5 +1,8 @@
 package com.mall.product.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mall.product.dao.CategoryBrandRelationDao;
 import com.mall.product.service.CategoryBrandRelationService;
 import com.mall.product.vo.web.CategoryLevelTwoVo;
@@ -7,6 +10,8 @@ import org.apache.commons.lang.StringUtils;
 import org.omg.CORBA.LongHolder;
 import org.omg.PortableServer.THREAD_POLICY_ID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -37,6 +42,14 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Resource
     CategoryBrandRelationService categoryBrandRelationService;
+
+    @Autowired
+    StringRedisTemplate redisTemplate;
+
+    private static final ObjectMapper om = new ObjectMapper();
+
+    private static final String CACHE_INDEX_CATEGORY_NAME = "INDEX_LEVEL_ONE";
+    private static final String CACHE_INDEX_CATEGORY_ALL_NAME = "INDEX_LEVEL_ALL";
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -100,20 +113,32 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     }
 
     @Override
-    public List<CategoryEntity> listForIndex() {
+    public List<CategoryEntity> listForIndex() throws JsonProcessingException {
+        String json = json = redisTemplate.opsForValue().get(CACHE_INDEX_CATEGORY_NAME);
+        if (StringUtils.isNotEmpty(json)) {
+            return om.readValue(json, new TypeReference<List<CategoryEntity>>() {});
+        }
         QueryWrapper<CategoryEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("cat_level", 1);
         List<CategoryEntity> list = this.list(queryWrapper);
+        redisTemplate.opsForValue().set(CACHE_INDEX_CATEGORY_NAME, om.writeValueAsString(list));
         return list;
     }
 
     @Override
-    public Map<Long, List<CategoryLevelTwoVo>> getCategoryLevelInfo() {
+    public Map<Long, List<CategoryLevelTwoVo>> getCategoryLevelInfo() throws JsonProcessingException{
+
+
+        String json = redisTemplate.opsForValue().get(CACHE_INDEX_CATEGORY_ALL_NAME);
+        if (StringUtils.isNotEmpty(json)) {
+            return om.readValue(json, new TypeReference<Map<Long, List<CategoryLevelTwoVo>>>() {});
+        }
+        Map<Long, List<CategoryLevelTwoVo>> listMap = null;
         //所有分类集合
         List<CategoryEntity> list = this.list();
         List<CategoryEntity> levelOneList = getLevelList(list, 0);
 
-        Map<Long, List<CategoryLevelTwoVo>> listMap = levelOneList.stream().collect(Collectors.toMap(k -> k.getCatId(), v -> {
+        listMap = levelOneList.stream().collect(Collectors.toMap(k -> k.getCatId(), v -> {
             //根据一级分类id查询二级分类
             List<CategoryEntity> levelTwoList = getLevelList(list, v.getCatId());
 
@@ -139,7 +164,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
             return twoVoList;
         }));
-
+        redisTemplate.opsForValue().set(CACHE_INDEX_CATEGORY_ALL_NAME, om.writeValueAsString(listMap));
         return listMap;
     }
 

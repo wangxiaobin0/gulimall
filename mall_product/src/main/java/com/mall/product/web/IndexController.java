@@ -1,5 +1,6 @@
 package com.mall.product.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mall.product.controller.CategoryController;
 import com.mall.product.entity.CategoryEntity;
 import com.mall.product.service.CategoryService;
@@ -19,7 +20,7 @@ public class IndexController {
     @Autowired
     CategoryService categoryService;
     @GetMapping({"/", "index", "index.html"})
-    public String goToIndex(Model model) {
+    public String goToIndex(Model model) throws JsonProcessingException {
         List<CategoryEntity> list = categoryService.listForIndex();
         model.addAttribute("list", list);
         return "index";
@@ -27,7 +28,7 @@ public class IndexController {
 
     @GetMapping("/index/json/catalog.json")
     @ResponseBody
-    public Map<Long, List<CategoryLevelTwoVo>> getCategoryLevelInfo() {
+    public Map<Long, List<CategoryLevelTwoVo>> getCategoryLevelInfo() throws JsonProcessingException{
         Map<Long, List<CategoryLevelTwoVo>> map = categoryService.getCategoryLevelInfo();
         return map;
     }

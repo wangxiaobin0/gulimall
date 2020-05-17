@@ -1,6 +1,7 @@
 package com.mall.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mall.common.utils.PageUtils;
 import com.mall.product.entity.CategoryEntity;
 import com.mall.product.vo.web.CategoryLevelTwoVo;
@@ -25,8 +26,8 @@ public interface CategoryService extends IService<CategoryEntity> {
 
     void updateDetail(CategoryEntity category);
 
-    List<CategoryEntity> listForIndex();
+    List<CategoryEntity> listForIndex() throws JsonProcessingException;
 
-    Map<Long, List<CategoryLevelTwoVo>> getCategoryLevelInfo();
+    Map<Long, List<CategoryLevelTwoVo>> getCategoryLevelInfo() throws JsonProcessingException;
 }
 
