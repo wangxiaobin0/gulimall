@@ -32,7 +32,7 @@ spring:
       #开启缓存前缀
       use-key-prefix: true
       #缓存前缀
-      key-prefix: CACHE_
+      #key-prefix: CACHE_
 
 
 mybatis-plus:

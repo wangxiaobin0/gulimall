@@ -1,0 +1,69 @@
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "skuTitle": "iphone"
+          }
+        }
+      ],
+      "filter": [
+        {
+          "term": {
+            "categoryId": "225"
+          }
+        },
+        {
+          "terms": {
+            "brandId": [
+              "3",
+              "4"
+            ]
+          }
+        },
+        {
+          "term": {
+            "hasStock": true
+          }
+        },
+        {
+          "range": {
+            "skuPrice": {
+              "gte": 10,
+              "lte": 5000
+            }
+          }
+        },
+        {
+          "nested": {
+            "path": "attrs",
+            "query": {
+              "bool": {
+                "must": [
+                  {
+                    "term": {
+                      "attrs.attrId": "19"
+                    }
+                  },
+                  {
+                    "term": {
+                      "attrs.attrValue": "iPhone 11"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "from": 0,
+  "size": 2,
+  "highlight": {
+    "pre_tags": ["<b style='color:red'>"],
+    "post_tags": ["</b>"],
+    "fields": {"skuTitle": {}}
+  }
+}
