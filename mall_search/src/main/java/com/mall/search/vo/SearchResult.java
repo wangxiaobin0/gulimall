@@ -4,9 +4,10 @@ import com.mall.common.to.SkuEsModel;
 import lombok.Data;
 
 import java.util.List;
+import java.util.ListResourceBundle;
 
 @Data
-public class SearchResponse {
+public class SearchResult {
 
     /**
      * 查询数据
@@ -29,6 +30,8 @@ public class SearchResponse {
     private Integer totalPage;
 
     private List<BrandVo> brands;
+
+    private List<CategoryVo> categories;
 
     private List<AttrVo> attrs;
 
@@ -53,6 +56,12 @@ public class SearchResponse {
         private String brandImg;
     }
 
+    @Data
+    public static class CategoryVo {
+        private Long cateId;
+        private String cateName;
+    }
+
     /**
      * 过滤属性
      */
@@ -69,6 +78,6 @@ public class SearchResponse {
         /**
          * 属性值
          */
-        private String attrValue;
+        private List<String> attrValue;
     }
 }
