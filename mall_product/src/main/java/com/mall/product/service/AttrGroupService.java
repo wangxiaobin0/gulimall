@@ -5,6 +5,7 @@ import com.mall.common.utils.PageUtils;
 import com.mall.product.entity.AttrGroupEntity;
 import com.mall.product.vo.AttrGroupVo;
 import com.mall.product.vo.AttrGroupWithAttrsVo;
+import com.mall.product.vo.web.SpuItemAttrGroupVo;
 
 import java.util.List;
 import java.util.Map;
@@ -27,5 +28,7 @@ public interface AttrGroupService extends IService<AttrGroupEntity> {
     void delete(List<Long> asList);
 
     List<AttrGroupWithAttrsVo> getAttrGroupAndAttrByCatelogId(Long catelogId);
+
+    List<SpuItemAttrGroupVo> getGroupVoBySpuId(Long spuId);
 }
 

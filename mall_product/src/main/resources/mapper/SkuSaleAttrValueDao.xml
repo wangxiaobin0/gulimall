@@ -12,6 +12,26 @@
         <result property="attrValue" column="attr_value"/>
         <result property="attrSort" column="attr_sort"/>
     </resultMap>
+    
+    <resultMap id="skuItemSaleAttrVo" type="com.mall.product.vo.web.SkuItemSaleAttrVo">
+        <result property="attrId" column="attr_id"/>
+        <result property="attrName" column="attr_name"/>
+        <collection property="attrValues" ofType="com.mall.product.vo.web.SkuAttrValueVo">
+            <result property="attrValue" column="attr_value"/>
+            <result property="skuIds" column="sku_ids"/>
+        </collection>
+    </resultMap>
 
-
+    <select id="getSaleAttrsBySpuId" parameterType="java.lang.Long" resultMap="skuItemSaleAttrVo">
+        select
+            psaav.attr_id as attr_id,
+            psaav.attr_name as attr_name,
+            psaav.attr_value as attr_value,
+            group_concat(distinct pki.sku_id) as sku_ids
+        from pms_sku_sale_attr_value psaav
+        left join pms_sku_info pki on pki.sku_id = psaav.sku_id
+        left join pms_spu_info psi on psi.id = pki.spu_id
+        where psi.id = #{spuId}
+        group by psaav.attr_id,psaav.attr_name,psaav.attr_value
+    </select>
 </mapper>

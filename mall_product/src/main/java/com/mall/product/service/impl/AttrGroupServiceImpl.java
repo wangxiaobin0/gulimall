@@ -6,6 +6,7 @@ import com.mall.product.service.AttrAttrgroupRelationService;
 import com.mall.product.service.AttrService;
 import com.mall.product.vo.AttrGroupVo;
 import com.mall.product.vo.AttrGroupWithAttrsVo;
+import com.mall.product.vo.web.SpuItemAttrGroupVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -93,5 +94,12 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
             return attrGroupWithAttrsVo;
         }).collect(Collectors.toList());
         return data;
+    }
+
+    @Override
+    public List<SpuItemAttrGroupVo> getGroupVoBySpuId(Long spuId) {
+        AttrGroupDao attrGroupDao = this.baseMapper;
+        List<SpuItemAttrGroupVo> groupAttrs =  attrGroupDao.getGroupVoBySpuId(spuId);
+        return groupAttrs;
     }
 }

@@ -1149,7 +1149,7 @@
                                 <a href="#">关注</a>
                             </div>
                             <p class="da">
-                                <a href="#">
+                                <a href="#" th:href="|http://item.mall.com/${product.skuId}.html|">
                                     <img src="/static/search/img/57d0d400Nfd249af4.jpg" th:src="${product.skuImg}" class="dim">
                                 </a>
                             </p>
@@ -1161,7 +1161,7 @@
                                 <span th:text="${product.skuPrice}">¥5199.00</span>
                             </p>
                             <p class="tab_JE">
-                                <a href="#" th:utext="${product.skuTitle}">
+                                <a href="#" th:utext="${product.skuTitle}" th:href="|http://item.mall.com/${product.skuId}.html|">
                                     Apple iPhone 7 Plus (A1661) 32G 黑色 移动联通电信4G手机
                                 </a>
                             <p class="tab_PI">已有<span>11万+</span>热门评价
