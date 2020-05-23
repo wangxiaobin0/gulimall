@@ -7,6 +7,7 @@ import com.mall.product.vo.web.SkuItemVo;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * sku信息
@@ -25,6 +26,6 @@ public interface SkuInfoService extends IService<SkuInfoEntity> {
 
     List<SkuInfoEntity> getSkuListBySpuId(Long spuId);
 
-    SkuItemVo getItemInfo(Long skuId);
+    SkuItemVo getItemInfo(Long skuId) throws ExecutionException, InterruptedException;
 }
 

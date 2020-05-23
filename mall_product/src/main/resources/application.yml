@@ -48,4 +48,10 @@ logging:
   level:
     com.mall: debug
 
-
+product:
+  thread:
+    core-pool-size: 20
+    maximum-pool-size: 50
+    keep-alive-time: 10
+    unit: seconds
+    task-queue-capacity: 100000
