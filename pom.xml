@@ -20,6 +20,7 @@
         <module>mall_gateway</module>
         <module>mall_third_party</module>
         <module>mall_search</module>
+        <module>mall_auth</module>
     </modules>
     <!--锁定版本-->
     <properties>

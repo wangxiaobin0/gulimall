@@ -69,3 +69,9 @@ spring:
           #按请求中的host匹配，
           predicates:
             - Host=search.mall.com
+        #认证授权域名访问
+        - id: mall-auth-route
+          uri: lb://mall-auth
+          #按请求中的host匹配，
+          predicates:
+            - Host=auth.mall.com
