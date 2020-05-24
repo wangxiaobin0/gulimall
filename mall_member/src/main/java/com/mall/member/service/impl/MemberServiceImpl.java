@@ -2,6 +2,7 @@ package com.mall.member.service.impl;
 
 import com.mall.member.entity.MemberLevelEntity;
 import com.mall.member.service.MemberLevelService;
+import com.mall.member.vo.LoginVo;
 import com.mall.member.vo.RegisterVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -74,6 +75,25 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         int count = this.count(queryWrapper);
         if (count != 0) {
             throw new RuntimeException("该用户名已注册");
+        }
+    }
+
+    @Override
+    public void login(LoginVo loginVo) {
+        String username = loginVo.getUsername();
+        String password = loginVo.getPassword();
+        QueryWrapper<MemberEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("username", username);
+        queryWrapper.or();
+        queryWrapper.eq("mobile", username);
+        MemberEntity one = this.getOne(queryWrapper);
+        if (one == null) {
+            throw new RuntimeException("请先注册");
+        }
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        boolean matches = passwordEncoder.matches(password, one.getPassword());
+        if (!matches) {
+            throw new RuntimeException("用户名或密码错误");
         }
     }
 

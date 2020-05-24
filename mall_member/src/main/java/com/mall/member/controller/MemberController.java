@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.mall.member.vo.LoginVo;
 import com.mall.member.vo.RegisterVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import com.mall.member.service.MemberService;
 import com.mall.common.utils.PageUtils;
 import com.mall.common.utils.R;
 
+import javax.print.attribute.standard.RequestingUserName;
 
 
 /**
@@ -83,6 +85,16 @@ public class MemberController {
     public R delete(@RequestBody Long[] ids){
 		memberService.removeByIds(Arrays.asList(ids));
 
+        return R.ok();
+    }
+
+    @PostMapping("/login")
+    R login(@RequestBody LoginVo loginVo){
+        try {
+            memberService.login(loginVo);
+        } catch (RuntimeException e) {
+            return R.error(500, e.getMessage());
+        }
         return R.ok();
     }
 

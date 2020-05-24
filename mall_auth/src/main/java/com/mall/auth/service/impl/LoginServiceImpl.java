@@ -41,6 +41,10 @@ public class LoginServiceImpl implements ILoginService {
 
     @Override
     public void login(LoginVo loginVo) {
-
+        R login = memberServiceFeign.login(loginVo);
+        Integer code = login.get("code", Integer.class);
+        if (code != 0) {
+            throw new RuntimeException(login.get("msg", String.class));
+        }
     }
 }

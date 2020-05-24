@@ -3,6 +3,7 @@ package com.mall.member.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.mall.common.utils.PageUtils;
 import com.mall.member.entity.MemberEntity;
+import com.mall.member.vo.LoginVo;
 import com.mall.member.vo.RegisterVo;
 
 import java.util.Map;
@@ -22,5 +23,7 @@ public interface MemberService extends IService<MemberEntity> {
 
     void checkMobilNoUnique(String mobileNo);
     void checkUsernameUnique(String username);
+
+    void login(LoginVo loginVo);
 }
 
