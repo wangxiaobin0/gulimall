@@ -4,12 +4,9 @@ import java.util.Arrays;
 import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.mall.member.vo.RegisterVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.mall.member.entity.MemberEntity;
 import com.mall.member.service.MemberService;
@@ -57,11 +54,13 @@ public class MemberController {
     /**
      * 保存
      */
-    @RequestMapping("/save")
-    //@RequiresPermissions("member:member:save")
-    public R save(@RequestBody MemberEntity member){
-		memberService.save(member);
-
+    @PostMapping("/save")
+    R save(@RequestBody RegisterVo registerVo){
+		try {
+            memberService.save(registerVo);
+        } catch (RuntimeException e) {
+		    return R.error(500, e.getMessage());
+        }
         return R.ok();
     }
 

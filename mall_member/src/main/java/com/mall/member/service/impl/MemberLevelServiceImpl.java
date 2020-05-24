@@ -1,5 +1,6 @@
 package com.mall.member.service.impl;
 
+import com.mall.member.entity.MemberEntity;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import java.util.Map;
@@ -30,6 +31,14 @@ public class MemberLevelServiceImpl extends ServiceImpl<MemberLevelDao, MemberLe
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public MemberLevelEntity getDefaultMemberLevel() {
+        QueryWrapper<MemberLevelEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("default_status", 1);
+        MemberLevelEntity levelEntity = this.getOne(queryWrapper);
+        return levelEntity;
     }
 
 }

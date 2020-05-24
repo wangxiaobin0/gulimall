@@ -20,3 +20,7 @@ spring:
       oss:
         endpoint: oss-cn-beijing.aliyuncs.com
         bucket: xbwang
+      sms:
+        host: http://smsmsgs.market.alicloudapi.com
+        path: /smsmsgs
+        app-code: fcafda16d6864292bdf34dd6be79b57a
