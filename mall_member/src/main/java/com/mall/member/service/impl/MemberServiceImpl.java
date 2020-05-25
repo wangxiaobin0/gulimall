@@ -86,7 +86,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
     }
 
     @Override
-    public void login(LoginVo loginVo) {
+    public MemberEntity login(LoginVo loginVo) {
         String username = loginVo.getUsername();
         String password = loginVo.getPassword();
         QueryWrapper<MemberEntity> queryWrapper = new QueryWrapper<>();
@@ -102,6 +102,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         if (!matches) {
             throw new RuntimeException("用户名或密码错误");
         }
+        one.setPassword("");
+        return one;
     }
 
     @Override

@@ -25,7 +25,7 @@ public interface MemberService extends IService<MemberEntity> {
     void checkMobilNoUnique(String mobileNo);
     void checkUsernameUnique(String username);
 
-    void login(LoginVo loginVo);
+    MemberEntity login(LoginVo loginVo);
 
     MemberEntity oAuthWeiBo(WeiBoInfoVo info);
 }

@@ -33,7 +33,8 @@ spring:
       use-key-prefix: true
       #缓存前缀
       #key-prefix: CACHE_
-
+  session:
+    store-type: redis
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**.xml

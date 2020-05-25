@@ -93,11 +93,11 @@ public class MemberController {
     @PostMapping("/login")
     R login(@RequestBody LoginVo loginVo){
         try {
-            memberService.login(loginVo);
+            MemberEntity login = memberService.login(loginVo);
+            return R.ok().put("user", login);
         } catch (RuntimeException e) {
             return R.error(500, e.getMessage());
         }
-        return R.ok();
     }
 
     @PostMapping("/login/weibo")

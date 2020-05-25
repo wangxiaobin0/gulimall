@@ -6,12 +6,14 @@ import com.mall.auth.service.ILoginService;
 import com.mall.auth.vo.LoginVo;
 import com.mall.auth.vo.RegisterVo;
 import com.mall.common.utils.R;
+import com.mall.common.vo.MemberEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -54,8 +56,10 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(LoginVo loginVo) {
-        loginService.login(loginVo);
+    public String login(LoginVo loginVo, HttpSession session) {
+        MemberEntity entity = loginService.login(loginVo);
+
+        session.setAttribute("user", entity);
         return "redirect:http://mall.com";
     }
 }

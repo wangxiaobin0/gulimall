@@ -6,6 +6,7 @@ import com.mall.auth.service.ILoginService;
 import com.mall.auth.vo.LoginVo;
 import com.mall.auth.vo.RegisterVo;
 import com.mall.common.utils.R;
+import com.mall.common.vo.MemberEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -40,11 +41,13 @@ public class LoginServiceImpl implements ILoginService {
     }
 
     @Override
-    public void login(LoginVo loginVo) {
+    public MemberEntity login(LoginVo loginVo) {
         R login = memberServiceFeign.login(loginVo);
         Integer code = login.get("code", Integer.class);
         if (code != 0) {
             throw new RuntimeException(login.get("msg", String.class));
         }
+        MemberEntity entity = login.get("user", MemberEntity.class);
+        return entity;
     }
 }
