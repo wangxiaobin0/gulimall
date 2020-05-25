@@ -6,6 +6,7 @@ import java.util.Map;
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
 import com.mall.member.vo.LoginVo;
 import com.mall.member.vo.RegisterVo;
+import com.mall.member.vo.WeiBoInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,7 @@ import com.mall.common.utils.PageUtils;
 import com.mall.common.utils.R;
 
 import javax.print.attribute.standard.RequestingUserName;
+import javax.servlet.http.HttpSession;
 
 
 /**
@@ -96,6 +98,12 @@ public class MemberController {
             return R.error(500, e.getMessage());
         }
         return R.ok();
+    }
+
+    @PostMapping("/login/weibo")
+    R oAuthWeiBo(@RequestBody WeiBoInfoVo info){
+        MemberEntity memberEntity = memberService.oAuthWeiBo(info);
+        return R.ok().put("user", memberEntity);
     }
 
 }

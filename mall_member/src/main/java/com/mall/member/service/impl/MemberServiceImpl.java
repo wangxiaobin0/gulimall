@@ -1,15 +1,22 @@
 package com.mall.member.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.mall.common.utils.HttpUtils;
 import com.mall.member.entity.MemberLevelEntity;
 import com.mall.member.service.MemberLevelService;
 import com.mall.member.vo.LoginVo;
 import com.mall.member.vo.RegisterVo;
+import com.mall.member.vo.WeiBoInfoVo;
+import org.apache.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -97,4 +104,35 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         }
     }
 
+    @Override
+    public MemberEntity oAuthWeiBo(WeiBoInfoVo info) {
+
+        MemberEntity access_token = this.getOne(new QueryWrapper<MemberEntity>().eq("uid", info.getUid()));
+
+        //不是第一次登录,更新token
+        if (access_token == null) {
+            access_token = new MemberEntity();
+            access_token.setUid(info.getUid());
+            try {
+                Map<String, String> header = new HashMap<>();
+                Map<String, String> query = new HashMap<>();
+                HttpResponse response = HttpUtils.doGet("https://api.weibo.com", "/2/users/show.json?access_token=" + info.getAccessToken(), "GET", header, query);
+                if (response.getStatusLine().getStatusCode() == 200) {
+                    String userInfo = response.getEntity().toString();
+                    JSONObject jsonObject = JSON.parseObject(userInfo);
+                    String name = jsonObject.getString("name");
+                    String avatar_large = jsonObject.getString("avatar_large");
+                    access_token.setNickname(name);
+                    access_token.setHeader(avatar_large);
+                }
+            } catch (Exception e) {
+            }
+        }
+        access_token.setAccessToken(info.getAccessToken());
+        access_token.setExpiresIn(info.getExpiresIn());
+        //更新token值
+        this.saveOrUpdate(access_token);
+        access_token.setPassword("");
+        return access_token;
+    }
 }

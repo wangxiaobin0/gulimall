@@ -5,6 +5,7 @@ import com.mall.common.utils.PageUtils;
 import com.mall.member.entity.MemberEntity;
 import com.mall.member.vo.LoginVo;
 import com.mall.member.vo.RegisterVo;
+import com.mall.member.vo.WeiBoInfoVo;
 
 import java.util.Map;
 
@@ -25,5 +26,7 @@ public interface MemberService extends IService<MemberEntity> {
     void checkUsernameUnique(String username);
 
     void login(LoginVo loginVo);
+
+    MemberEntity oAuthWeiBo(WeiBoInfoVo info);
 }
 
