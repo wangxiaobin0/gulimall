@@ -1,6 +1,7 @@
 package com.mall.auth.config;
 
 import com.alibaba.fastjson.support.spring.FastJsonRedisSerializer;
+import com.mall.common.constrant.RedisSessionConstant;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +22,9 @@ public class RedisSessionConfig {
     @ConditionalOnClass(CookieSerializer.class)
     public CookieSerializer cookieSerializer() {
         DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
-        cookieSerializer.setDomainName("mall.com");
-        cookieSerializer.setCookieName("mall_session");
+        cookieSerializer.setDomainName(RedisSessionConstant.DOMAIN_NAME);
+        cookieSerializer.setCookieName(RedisSessionConstant.COOKIE_NAME);
+        cookieSerializer.setUseHttpOnlyCookie(true);
         return cookieSerializer;
     }
 }
