@@ -1,6 +1,7 @@
 package com.mall.auth.controller;
 
 import com.mall.auth.service.IOAuthService;
+import com.mall.common.constrant.AuthConstant;
 import com.mall.common.vo.MemberEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,7 +21,7 @@ public class OAuthController {
     @GetMapping("/oauth2/weibo")
     public String oauthLogin(@RequestParam("code") String code, HttpSession session) throws Exception {
         MemberEntity entity = oAuthService.oauthLogin(code);
-        session.setAttribute("user", entity);
+        session.setAttribute(AuthConstant.LOGIN_USER, entity);
         System.out.println(entity);
         return "redirect:http://mall.com";
     }

@@ -5,6 +5,7 @@ import com.mall.auth.feign.ThirdPartFeign;
 import com.mall.auth.service.ILoginService;
 import com.mall.auth.vo.LoginVo;
 import com.mall.auth.vo.RegisterVo;
+import com.mall.common.constrant.AuthConstant;
 import com.mall.common.utils.R;
 import com.mall.common.vo.MemberEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +60,7 @@ public class LoginController {
     public String login(LoginVo loginVo, HttpSession session) {
         MemberEntity entity = loginService.login(loginVo);
 
-        session.setAttribute("user", entity);
+        session.setAttribute(AuthConstant.LOGIN_USER, entity);
         return "redirect:http://mall.com";
     }
 }
