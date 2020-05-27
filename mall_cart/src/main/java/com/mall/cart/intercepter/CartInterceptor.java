@@ -51,6 +51,7 @@ public class CartInterceptor implements HandlerInterceptor {
         //设置user_key，有了就更新时间，没有就添加
         UserTo userTo = threadLocal.get();
         Cookie userKeyCookie = new Cookie(AuthConstant.USER_KEY, userTo.getUserKey());
+        userKeyCookie.setDomain("mall.com");
         response.addCookie(userKeyCookie);
     }
 
