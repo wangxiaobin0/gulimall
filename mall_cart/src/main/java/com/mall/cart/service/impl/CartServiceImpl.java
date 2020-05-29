@@ -8,6 +8,7 @@ import com.mall.cart.to.UserTo;
 import com.mall.cart.vo.Cart;
 import com.mall.cart.vo.CartItemVo;
 import com.mall.cart.vo.SkuInfoVo;
+import com.mall.common.constrant.RedisSessionConstant;
 import com.mall.common.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
@@ -149,6 +150,15 @@ public class CartServiceImpl implements ICartService {
         String key = userTo.getUserId() == null ? CART_PREFIX + userTo.getUserKey() : CART_PREFIX + userTo.getUserId();
         BoundHashOperations<String, Object, Object> hashOps = getHashOps(key);
         hashOps.delete(skuId.toString());
+    }
+
+    @Override
+    public List<CartItemVo> getCheckedItems() throws ExecutionException, InterruptedException {
+        Cart cart = getCart();
+        List<CartItemVo> checkedList = cart.getItems().stream().filter(cartItemVo -> {
+            return cartItemVo.getCheck();
+        }).collect(Collectors.toList());
+        return checkedList;
     }
 
     private List<CartItemVo> convertToCartVos(List<Object> objects) {

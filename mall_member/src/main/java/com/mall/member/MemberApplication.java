@@ -3,6 +3,7 @@ package com.mall.member;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 import java.util.ArrayList;
 
@@ -10,6 +11,7 @@ import java.util.ArrayList;
  * @author
  * @date 2020/4/4
  */
+@EnableRedisHttpSession
 @SpringBootApplication
 @MapperScan("com.mall.member.dao")
 public class MemberApplication {

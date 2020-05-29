@@ -1,6 +1,10 @@
 package com.mall.member.service.impl;
 
+import com.mall.common.vo.MemberEntity;
+import com.mall.member.interceptor.MemberRequestInterceptor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -24,6 +28,16 @@ public class MemberReceiveAddressServiceImpl extends ServiceImpl<MemberReceiveAd
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public List<MemberReceiveAddressEntity> getAddressByMemberId() {
+        MemberEntity loginUser = MemberRequestInterceptor.getLoginUser();
+        QueryWrapper<MemberReceiveAddressEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("member_id", loginUser.getId());
+
+        List<MemberReceiveAddressEntity> list = this.list(queryWrapper);
+        return list;
     }
 
 }

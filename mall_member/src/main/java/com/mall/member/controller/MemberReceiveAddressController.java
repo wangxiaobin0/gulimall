@@ -1,15 +1,12 @@
 package com.mall.member.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.mall.member.entity.MemberReceiveAddressEntity;
 import com.mall.member.service.MemberReceiveAddressService;
@@ -87,4 +84,10 @@ public class MemberReceiveAddressController {
         return R.ok();
     }
 
+    @GetMapping
+    @ResponseBody
+    public List<MemberReceiveAddressEntity> getAddressByMemberId() {
+        List<MemberReceiveAddressEntity> address = memberReceiveAddressService.getAddressByMemberId();
+        return address;
+    }
 }

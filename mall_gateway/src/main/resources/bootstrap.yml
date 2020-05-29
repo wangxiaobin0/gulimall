@@ -81,3 +81,9 @@ spring:
           #按请求中的host匹配，
           predicates:
             - Host=cart.mall.com
+        #购物车域名访问
+        - id: mall-order-route
+          uri: lb://mall-order
+          #按请求中的host匹配，
+          predicates:
+            - Host=order.mall.com

@@ -15,14 +15,12 @@ import java.util.Date;
  * @date 2020-04-04 15:38:26
  */
 @Data
-@TableName("ums_member")
 public class MemberEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * id
 	 */
-	@TableId
 	private Long id;
 	/**
 	 * 会员等级id

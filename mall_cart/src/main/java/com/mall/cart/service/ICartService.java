@@ -3,6 +3,7 @@ package com.mall.cart.service;
 import com.mall.cart.vo.Cart;
 import com.mall.cart.vo.CartItemVo;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public interface ICartService {
@@ -18,4 +19,6 @@ public interface ICartService {
     void changeSkuCount(Long skuId, Integer count);
 
     void delete(Long skuId);
+
+    List<CartItemVo> getCheckedItems() throws ExecutionException, InterruptedException;
 }
