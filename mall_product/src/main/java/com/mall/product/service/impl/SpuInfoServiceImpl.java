@@ -282,6 +282,13 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         return (Integer) saveResponse.get("code") == 0;
     }
 
+    @Override
+    public SpuInfoEntity getBySkuId(Long id) {
+        SkuInfoEntity byId = skuInfoService.getById(id);
+        SpuInfoEntity spuInfoEntity = this.getById(byId.getSpuId());
+        return spuInfoEntity;
+    }
+
     /**
      * 保存Spu图片集
      *

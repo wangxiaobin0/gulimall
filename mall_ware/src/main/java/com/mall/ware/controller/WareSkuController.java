@@ -6,6 +6,7 @@ import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
 import com.mall.ware.vo.SkuHasStockVo;
+import com.mall.ware.vo.SkuStockVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -92,4 +93,13 @@ public class WareSkuController {
         return R.ok();
     }
 
+    @PostMapping("/sku/stock")
+    public R lockStock(@RequestBody List<SkuStockVo> skuStockVos) {
+        try {
+            Boolean b = wareSkuService.lockStock(skuStockVos);
+            return R.ok();
+        } catch (Exception e) {
+            return R.error();
+        }
+    }
 }

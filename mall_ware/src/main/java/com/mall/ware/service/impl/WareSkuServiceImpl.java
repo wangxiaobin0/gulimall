@@ -1,6 +1,9 @@
 package com.mall.ware.service.impl;
 
 import com.mall.ware.vo.SkuHasStockVo;
+import com.mall.ware.vo.SkuStockVo;
+import com.mall.ware.vo.SkuWareVo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,10 +21,11 @@ import com.mall.common.utils.Query;
 import com.mall.ware.dao.WareSkuDao;
 import com.mall.ware.entity.WareSkuEntity;
 import com.mall.ware.service.WareSkuService;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
-
+@Slf4j
 @Service("wareSkuService")
 public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> implements WareSkuService {
 
@@ -80,6 +84,37 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             return skuHasStockVo;
         }).collect(Collectors.toList());
         return collect;
+    }
+
+    @Override
+    @Transactional
+    public Boolean lockStock(List<SkuStockVo> skuStockVos) {
+
+        for (SkuStockVo skuStockVo : skuStockVos) {
+            Long skuId = skuStockVo.getSkuId();
+            Integer num = skuStockVo.getNum();
+            //查询有库存的仓库id
+            List<Long> wareIds = this.baseMapper.getWareIdBySku(skuId, num);
+            if (wareIds == null || wareIds.isEmpty()) {
+                log.info("商品：{}库存不足", skuId);
+                throw new RuntimeException("商品：" + skuId + "库存不足");
+            }
+            //锁定库存
+            Boolean locked = false;
+            for (Long wareId : wareIds) {
+                Integer stock = this.baseMapper.lockStock(wareId, skuId, num);
+                if (stock == 1) {
+                    locked = true;
+                    log.info("锁库存成功。skuId:{},num:{},wareId:{}", skuId, num, wareId);
+                    break;
+                }
+            }
+            if (!locked) {
+                log.info("商品：{}库存不足", skuId);
+                throw new RuntimeException("商品：" + skuId + "库存不足");
+            }
+        }
+        return true;
     }
 
 }

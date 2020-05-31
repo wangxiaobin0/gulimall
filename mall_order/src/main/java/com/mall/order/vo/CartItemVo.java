@@ -1,9 +1,10 @@
 package com.mall.order.vo;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class CartItemVo {
+public class CartItemVo implements Serializable {
 
     private Long skuId;
     private Boolean check = true;

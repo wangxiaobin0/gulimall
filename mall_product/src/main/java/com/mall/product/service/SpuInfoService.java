@@ -25,5 +25,6 @@ public interface SpuInfoService extends IService<SpuInfoEntity> {
 
     Boolean up(Long spuId) throws IOException;
 
+    SpuInfoEntity getBySkuId(Long id);
 }
 

@@ -97,4 +97,14 @@ public class SpuInfoController {
             return R.error();
         }
     }
+
+    /**
+     * 信息
+     */
+    @RequestMapping("/info/sku/{id}")
+    public R infoBySkuId(@PathVariable("id") Long id) {
+        SpuInfoEntity spuInfo = spuInfoService.getBySkuId(id);
+
+        return R.ok().put("spuInfo", spuInfo);
+    }
 }
