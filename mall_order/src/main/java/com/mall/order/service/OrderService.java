@@ -25,5 +25,9 @@ public interface OrderService extends IService<OrderEntity> {
     OrderConfirmVo getCartInfo() throws ExecutionException, InterruptedException;
 
     OrderPayRespVo goToPayPage(OrderPayVo orderPayVo);
+
+    OrderEntity getByOrderSn(String orderSn);
+
+    void cancelOrder(OrderEntity orderEntity);
 }
 

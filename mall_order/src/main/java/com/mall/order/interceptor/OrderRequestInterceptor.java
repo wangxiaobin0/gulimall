@@ -20,7 +20,10 @@ public class OrderRequestInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         HttpSession session = request.getSession();
         MemberEntity loginUser = (MemberEntity) session.getAttribute(AuthConstant.LOGIN_USER);
-
+        String requestURI = request.getRequestURI();
+        if (requestURI.equals("/order/order/orderSn")) {
+            return true;
+        }
         if (loginUser == null) {
             response.sendRedirect(AuthConstant.LOGIN_URL);
             return false;

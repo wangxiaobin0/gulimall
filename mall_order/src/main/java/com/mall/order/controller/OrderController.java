@@ -4,12 +4,10 @@ import java.util.Arrays;
 import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.mall.common.to.OrderTo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.mall.order.entity.OrderEntity;
 import com.mall.order.service.OrderService;
@@ -87,4 +85,14 @@ public class OrderController {
         return R.ok();
     }
 
+    @GetMapping("/orderSn")
+    public R getByOrderSn(@RequestParam("orderSn") String orderSn) {
+        OrderEntity orderEntity = orderService.getByOrderSn(orderSn);
+        OrderTo orderTo = null;
+        if (orderEntity != null) {
+            orderTo = new OrderTo();
+            BeanUtils.copyProperties(orderEntity, orderTo);
+        }
+        return R.ok().put("orderInfo", orderTo);
+    }
 }
