@@ -3,8 +3,10 @@ package com.mall.product.service.impl;
 import com.mall.common.utils.R;
 import com.mall.product.entity.SkuImagesEntity;
 import com.mall.product.entity.SpuInfoDescEntity;
+import com.mall.product.feign.SeckillServiceFeign;
 import com.mall.product.feign.WareFeignService;
 import com.mall.product.service.*;
+import com.mall.product.vo.SeckillSkuRedisTo;
 import com.mall.product.vo.web.SkuItemSaleAttrVo;
 import com.mall.product.vo.web.SkuItemVo;
 import com.mall.product.vo.web.SpuItemAttrGroupVo;
@@ -45,6 +47,9 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
     @Autowired
     SkuSaleAttrValueService skuSaleAttrValueService;
+
+    @Autowired
+    SeckillServiceFeign seckillServiceFeign;
 
     @Autowired
     ThreadPoolExecutor executor;
@@ -143,8 +148,13 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
             SpuInfoDescEntity descEntity = spuInfoDescService.getById(res.getSpuId());
             vo.setDesc(descEntity);
         }, executor);
+
+        CompletableFuture<Void> redisToFuture = CompletableFuture.runAsync(() -> {
+            SeckillSkuRedisTo redisTo = seckillServiceFeign.secInfo(skuId);
+            vo.setRedisTo(redisTo);
+        }, executor);
         //阻塞等待 图片、销售属性、规格参数、spu详情异步加载完毕再返回vo
-        CompletableFuture.allOf(imagesFuture, saleAttrsFuture, attrGroupsFuture, spuDescFuture).get();
+        CompletableFuture.allOf(imagesFuture, saleAttrsFuture, attrGroupsFuture, spuDescFuture, redisToFuture).get();
         return vo;
     }
 

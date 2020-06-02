@@ -503,8 +503,8 @@
 									<span>￥</span>
 									<span th:text="${#numbers.formatCurrency(item.info.price)}">4499.00</span>
 								</li>
-								<li>
-									预约享资格
+								<li th:if="${item.redisTo != null}" style="color: red">
+										活动价：[[${item.redisTo.seckillPrice}]]，活动时间[[${#dates.format(new java.util.Date(item.redisTo.startTime), "yyyy-MM-dd HH:mm:ss")}]]至[[${#dates.format(new java.util.Date(item.redisTo.endTime), "yyyy-MM-dd HH:mm:ss")}]]
 								</li>
 								<li>
 									<a href="">

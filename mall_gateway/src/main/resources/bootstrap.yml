@@ -29,6 +29,8 @@ spring:
           uri: lb://mall-coupon
           predicates:
             - Path=/api/coupon/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
         #用户服务
         - id: mall-member
           uri: lb://mall-member
@@ -87,3 +89,9 @@ spring:
           #按请求中的host匹配，
           predicates:
             - Host=order.mall.com
+        #购物车域名访问
+        - id: mall-seckill-route
+          uri: lb://mall-seckill
+          #按请求中的host匹配，
+          predicates:
+            - Host=seckill.mall.com

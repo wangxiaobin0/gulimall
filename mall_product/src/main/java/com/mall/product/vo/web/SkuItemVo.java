@@ -3,6 +3,7 @@ package com.mall.product.vo.web;
 import com.mall.product.entity.SkuImagesEntity;
 import com.mall.product.entity.SkuInfoEntity;
 import com.mall.product.entity.SpuInfoDescEntity;
+import com.mall.product.vo.SeckillSkuRedisTo;
 import lombok.Data;
 
 import java.util.List;
@@ -38,4 +39,6 @@ public class SkuItemVo {
      * 商品详情
      */
     SpuInfoDescEntity desc;
+
+    SeckillSkuRedisTo redisTo;
 }

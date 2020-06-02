@@ -22,6 +22,7 @@
         <module>mall_search</module>
         <module>mall_auth</module>
         <module>mall_cart</module>
+        <module>mall_seckill</module>
     </modules>
     <!--锁定版本-->
     <properties>

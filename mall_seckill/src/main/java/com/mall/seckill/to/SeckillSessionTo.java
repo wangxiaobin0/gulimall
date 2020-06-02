@@ -1,14 +1,11 @@
-package com.mall.coupon.entity;
+package com.mall.seckill.to;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.mall.seckill.vo.SeckillSkuRelationVo;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-
-import lombok.Data;
 
 /**
  * 秒杀活动场次
@@ -18,14 +15,11 @@ import lombok.Data;
  * @date 2020-04-04 15:35:51
  */
 @Data
-@TableName("sms_seckill_session")
-public class SeckillSessionEntity implements Serializable {
-	private static final long serialVersionUID = 1L;
+public class SeckillSessionTo implements Serializable {
 
 	/**
 	 * id
 	 */
-	@TableId
 	private Long id;
 	/**
 	 * 场次名称
@@ -48,7 +42,5 @@ public class SeckillSessionEntity implements Serializable {
 	 */
 	private Date createTime;
 
-
-	@TableField(exist = false)
-	List<SeckillSkuRelationEntity> relationSkus;
+	List<SeckillSkuRelationVo> relationSkus;
 }
