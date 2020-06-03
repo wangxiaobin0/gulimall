@@ -1,6 +1,8 @@
 package com.mall.order.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.mall.common.to.SeckillOrderTo;
+import com.mall.common.to.SeckillSkuRedisTo;
 import com.mall.common.utils.PageUtils;
 import com.mall.order.entity.OrderEntity;
 import com.mall.order.vo.OrderConfirmVo;
@@ -29,5 +31,7 @@ public interface OrderService extends IService<OrderEntity> {
     OrderEntity getByOrderSn(String orderSn);
 
     void cancelOrder(OrderEntity orderEntity);
+
+    void createSeckillOrder(SeckillOrderTo orderPayVo);
 }
 

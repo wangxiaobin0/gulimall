@@ -2,9 +2,13 @@ package com.mall.seckill.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.mall.common.constrant.OrderMQConstant;
+import com.mall.common.to.SeckillOrderTo;
 import com.mall.common.utils.R;
+import com.mall.common.vo.MemberEntity;
 import com.mall.seckill.feign.CouponServiceFeign;
 import com.mall.seckill.feign.ProductServiceFeign;
+import com.mall.seckill.interceptor.SeckillRequestInterceptor;
 import com.mall.seckill.service.SeckillService;
 import com.mall.seckill.to.SeckillSessionTo;
 import com.mall.seckill.to.SeckillSkuRedisTo;
@@ -12,15 +16,16 @@ import com.mall.seckill.vo.SeckillSkuRelationVo;
 import com.mall.seckill.vo.SkuInfoVo;
 import org.redisson.api.RSemaphore;
 import org.redisson.api.RedissonClient;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.commons.util.IdUtils;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -47,6 +52,12 @@ public class SeckillServiceImpl implements SeckillService {
 
     @Autowired
     RedissonClient redissonClient;
+
+    @Autowired
+    RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    SeckillRequestInterceptor seckillRequestInterceptor;
 
     @Override
     public void upTomorrowSeckill() {
@@ -98,6 +109,56 @@ public class SeckillServiceImpl implements SeckillService {
             return skuRedisTo;
         }
         return null;
+    }
+
+    @Override
+    public String createSeckillOrder(Long skuId, Long sessionId, String token, Integer num) {
+
+        //1. 验证是否登录,由拦截器校验
+        //2. 验证商品是否参加秒杀活动
+        BoundHashOperations<String, String, String> hashOps = redisTemplate.boundHashOps(SECKILL_INFO);
+        String sessionKey = sessionId + "_" + skuId;
+        //商品参加秒杀
+        if (hashOps.hasKey(sessionKey)) {
+            String skuJson = hashOps.get(sessionKey);
+            com.mall.common.to.SeckillSkuRedisTo redisTo = JSON.parseObject(skuJson, com.mall.common.to.SeckillSkuRedisTo.class);
+            if (token.equals(redisTo.getToken())) {
+                if (num < redisTo.getSeckillCount().intValue()) {
+                    MemberEntity loginUser = seckillRequestInterceptor.getLoginUser();
+                    //秒杀过商品的用户的key
+                    String seckillKey = sessionKey + "_" + loginUser.getId();
+                    if (!redisTemplate.hasKey(seckillKey)) {
+                        RSemaphore semaphore = redissonClient.getSemaphore(SECKILL_STOCK_SEMAPHORE + token);
+                        boolean b = semaphore.tryAcquire(num);
+                        //发送
+                        if (b) {
+                            SeckillOrderTo orderTo = new SeckillOrderTo();
+                            orderTo.setMemberId(loginUser.getId());
+                            orderTo.setOrderSn(UUID.randomUUID().toString());
+                            orderTo.setRedisTo(redisTo);
+                            orderTo.setNum(num);
+                            rabbitTemplate.convertAndSend(OrderMQConstant.ORDER_EXCHANGE, OrderMQConstant.ORDER_SECKILL_ROUTING_KEY, orderTo);
+                            //记录此账户已参加过活动
+                            redisTemplate.opsForValue().set(seckillKey, num.toString());
+                            //TODO:发送延时消息，主动判断订单状态，判断是否需要补偿库存
+
+                            return orderTo.getOrderSn();
+                        } else {
+                            throw new RuntimeException("库存不足");
+                        }
+                    } else {
+                        throw new RuntimeException("每位用户只能参加一次秒杀活动");
+                    }
+
+                } else {
+                    throw new RuntimeException("购买数量超出限制");
+                }
+            } else {
+                throw new RuntimeException("秒杀商品token异常，刷新页面后重试");
+            }
+        } else {
+            throw new RuntimeException("该商品为参加秒杀活动");
+        }
     }
 
     /**

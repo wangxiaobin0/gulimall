@@ -12,6 +12,10 @@ public class OrderMQConstant {
 
     public static final String ORDER_CANCEL_ROUTING_KEY = "order.cancel.#";
 
+    public static final String ORDER_CREATE_SECKILL_ORDER_QUEUE = "order.create.seckill.queue";
+
+    public static final String ORDER_SECKILL_ROUTING_KEY = "order.seckill.#";
+
     public static final String DEAD_LETTER_EXCHANGE = ORDER_EXCHANGE;
 
     public static final String DEAD_LETTER_ROUTING_KEY = ORDER_CANCEL_ROUTING_KEY;

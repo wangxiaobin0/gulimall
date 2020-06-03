@@ -5,6 +5,8 @@ import com.mall.common.constrant.OrderConstant;
 import com.mall.common.constrant.OrderMQConstant;
 import com.mall.common.constrant.WareMQConstant;
 import com.mall.common.to.OrderTo;
+import com.mall.common.to.SeckillOrderTo;
+import com.mall.common.to.SeckillSkuRedisTo;
 import com.mall.common.utils.R;
 import com.mall.common.vo.MemberEntity;
 import com.mall.order.entity.OrderItemEntity;
@@ -184,6 +186,27 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         OrderTo orderTo = new OrderTo();
         BeanUtils.copyProperties(orderEntity, orderTo);
         rabbitTemplate.convertAndSend(WareMQConstant.WARE_EXCHANGE, WareMQConstant.WARE_UNLOCK_ROUTING_KEY, orderTo);
+    }
+
+    @Override
+    public void createSeckillOrder(SeckillOrderTo orderTo) {
+        //保存订单信息
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setMemberId(orderTo.getMemberId());
+        orderEntity.setOrderSn(orderTo.getOrderSn());
+        orderEntity.setStatus(OrderStatusEnum.CREATE_NEW.getCode());
+        this.save(orderEntity);
+
+        //保存秒杀商品信息
+        OrderItemEntity orderItemEntity = new OrderItemEntity();
+        SeckillSkuRedisTo redisTo = orderTo.getRedisTo();
+        orderItemEntity.setOrderSn(orderTo.getOrderSn());
+        orderItemEntity.setRealAmount(redisTo.getSeckillCount().multiply(new BigDecimal(orderTo.getNum().toString())));
+        orderItemEntity.setSkuId(redisTo.getSkuId());
+        orderItemEntity.setSkuQuantity(orderTo.getNum());
+        orderItemService.save(orderItemEntity);
+
+        //TODO:发送延时消息，在订单自动关闭时间后核对订单状态,判断是否需要补偿库存
     }
 
     private List<OrderItemEntity> addOrderItem(String orderSn) {

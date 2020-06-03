@@ -622,9 +622,14 @@
 
 								</div>
 							</div>
-							<div class="box-btns-two">
+							<div class="box-btns-two" th:if="${item.redisTo == null}">
 								<a href="javascript:addCart();" th:attr="skuId=${item.info.skuId}" id="addCart">
 									加入购物车
+								</a>
+							</div>
+							<div class="box-btns-two" th:if="${item.redisTo != null}">
+								<a href="javascript:seckill();" th:attr="skuId=${item.info.skuId},token=${item.redisTo.token},sessionId=${item.redisTo.promotionSessionId}" id="seckill">
+									立即抢购
 								</a>
 							</div>
 							<div class="box-btns-three">
@@ -1221,6 +1226,12 @@
 			let skuId = $("#addCart").attr("skuId");
 			location.href = "http://cart.mall.com/cart.html?skuId=" + skuId + "&num=" + $("#count").val();
 			return false;
+		}
+		function seckill() {
+			let skuId = $("#seckill").attr("skuId");
+			let sessionId = $("#seckill").attr("sessionId");
+			let token = $("#seckill").attr("token");
+			location.href = "http://seckill.mall.com/seckill?skuId=" + skuId + "&sessionId=" + sessionId + "&token=" + token + "&num=" + $("#count").val();
 		}
 	</script>
 

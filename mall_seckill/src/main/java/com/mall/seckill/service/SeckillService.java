@@ -12,4 +12,6 @@ public interface SeckillService {
     List<SeckillSkuRedisTo> todaySeckill();
 
     SeckillSkuRedisTo secInfo(Long skuId);
+
+    String createSeckillOrder(Long skuId, Long sessionId, String token, Integer num);
 }

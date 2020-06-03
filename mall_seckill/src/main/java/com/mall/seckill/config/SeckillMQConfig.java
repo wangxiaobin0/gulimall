@@ -1,4 +1,4 @@
-package com.mall.order.config;
+package com.mall.seckill.config;
 
 import com.mall.common.constrant.MQConstant;
 import com.mall.common.constrant.OrderMQConstant;
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class OrderMQConfig {
+public class SeckillMQConfig {
 
     @Autowired
     RabbitTemplate rabbitTemplate;
@@ -99,23 +99,4 @@ public class OrderMQConfig {
         return new Jackson2JsonMessageConverter();
     }
 
-    /**
-     * 秒杀业务
-     */
-    @Bean
-    Queue createSeckillOrderQueue() {
-        Queue queue = new Queue(OrderMQConstant.ORDER_CREATE_SECKILL_ORDER_QUEUE,  true, false, false, null);
-        return queue;
-    }
-
-    @Bean
-    Binding createSeckillToExchange() {
-        Binding binding = new Binding(
-                OrderMQConstant.ORDER_CREATE_SECKILL_ORDER_QUEUE,
-                Binding.DestinationType.QUEUE,
-                OrderMQConstant.ORDER_EXCHANGE,
-                OrderMQConstant.ORDER_SECKILL_ROUTING_KEY,
-                null);
-        return binding;
-    }
 }
