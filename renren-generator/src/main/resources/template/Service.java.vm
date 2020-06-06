@@ -11,7 +11,6 @@ import java.util.Map;
  *
  * @author ${author}
  * @email ${email}
- * @date ${datetime}
  */
 public interface ${className}Service extends IService<${className}Entity> {
 

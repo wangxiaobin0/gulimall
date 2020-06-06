@@ -1,4 +1,4 @@
-package ${package}.${moduleName}.entity;
+package ${package}.${moduleName}.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -15,7 +15,6 @@ import lombok.Data;
  * 
  * @author ${author}
  * @email ${email}
- * @date ${datetime}
  */
 @Data
 @TableName("${tableName}")
