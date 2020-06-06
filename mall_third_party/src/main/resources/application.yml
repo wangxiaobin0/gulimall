@@ -15,12 +15,12 @@ spring:
 #            refresh: true
     #阿里云对象存储
     alicloud:
-      access-key: LTAI4FmzDBZByNuokPMs7QwC
-      secret-key: spbY2KlKJjoI3wk0CpPTr7eEv4X90M
+      access-key: YOUR-ACCESS-KEY
+      secret-key: YOUR-SECRET-KEY
       oss:
-        endpoint: oss-cn-beijing.aliyuncs.com
-        bucket: xbwang
+        endpoint: YOUR-ENDPOINT
+        bucket: YOUR-BUCKET
       sms:
         host: http://smsmsgs.market.alicloudapi.com
         path: /smsmsgs
-        app-code: fcafda16d6864292bdf34dd6be79b57a
+        app-code: YOUR-APP-CODE
