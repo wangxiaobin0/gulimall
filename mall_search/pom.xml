@@ -12,7 +12,7 @@
     <artifactId>mall_search</artifactId>
 
     <properties>
-        <elasticsearch.version>7.4.2</elasticsearch.version>
+        <elasticsearch.version>7.14.0</elasticsearch.version>
     </properties>
     <dependencies>
 
